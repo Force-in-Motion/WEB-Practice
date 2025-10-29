@@ -1,0 +1,23 @@
+.table {
+  border-collapse: collapse;
+  background-color: white;
+  color: black;
+  padding: 5px;
+  border: 1px solid black;
+  width: 500px;
+  height: 100px;
+  text-align: center;
+  margin: 0 auto;
+}
+
+.td {
+    border: 1px solid black;
+}
+
+.div {
+    border: 1px solid black;
+    text-align: center;
+    width: 700px;
+    height: 300px;
+
+}
