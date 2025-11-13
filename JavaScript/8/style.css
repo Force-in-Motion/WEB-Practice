@@ -1,0 +1,33 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  font-family: "Karla", sans-serif;
+  background-color: hwb(278 19% 63%);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+
+.square {
+  width: 500px;
+  height: 500px;
+  justify-content: center;
+  align-items: center;
+  background-image: url("./Black Tea Cup.png");
+  background-size: cover;
+  background-position: center;
+}
+
+.btn {
+  width: 200px;
+  height: 70px;
+  padding: 10px 20px;
+  background-color: #548896;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  font-size: 24px;
+  cursor: pointer;
+}
