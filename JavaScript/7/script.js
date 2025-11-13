@@ -7,4 +7,4 @@ square.addEventListener('mouseover', () => {
 
 square.addEventListener('mouseout', () => {
   square.textContent = '';
-});Наведено
+});
