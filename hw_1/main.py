@@ -1,7 +1,7 @@
 
 from fastapi import FastAPI
-from api.view.book import router as book_router
-from api.view.user import router as user_router
+from app.view.book import router as book_router
+from app.view.user import router as user_router
 
 app = FastAPI()
 
