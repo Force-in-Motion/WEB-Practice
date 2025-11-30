@@ -11,7 +11,11 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[CommentResponse], status_code=status.HTTP_200_OK)
+@router.get(
+    "/",
+    response_model=list[CommentResponse],
+    status_code=status.HTTP_200_OK,
+)
 async def get_all_comments_from_post(
     post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
 ) -> list[CommentResponse]:
@@ -24,7 +28,9 @@ async def get_all_comments_from_post(
 
 
 @router.get(
-    "/{comment_id}", response_model=CommentResponse, status_code=status.HTTP_200_OK
+    "/{comment_id}",
+    response_model=CommentResponse,
+    status_code=status.HTTP_200_OK,
 )
 async def get_comment_by_id_from_post(
     post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
@@ -42,7 +48,11 @@ async def get_comment_by_id_from_post(
     )
 
 
-@router.post("/", response_model=CommentResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=CommentResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_comment_from_post(
     post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
     comment: CommentCreate,
@@ -60,7 +70,9 @@ async def create_comment_from_post(
 
 
 @router.put(
-    "/{comment_id}", response_model=CommentResponse, status_code=status.HTTP_200_OK
+    "/{comment_id}",
+    response_model=CommentResponse,
+    status_code=status.HTTP_200_OK,
 )
 async def update_comment_by_id_from_post(
     post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
@@ -79,7 +91,11 @@ async def update_comment_by_id_from_post(
     )
 
 
-@router.delete("/", response_model=list, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/",
+    response_model=list,
+    status_code=status.HTTP_200_OK,
+)
 async def clear_comments_from_post(
     post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
 ) -> list:
@@ -92,10 +108,13 @@ async def clear_comments_from_post(
 
 
 @router.delete(
-    "/{comment_id}", response_model=CommentResponse, status_code=status.HTTP_200_OK
+    "/{comment_id}",
+    response_model=CommentResponse,
+    status_code=status.HTTP_200_OK,
 )
 async def delete_comment_by_id_from_post(
-    post: Annotated[PostResponse, Depends(PostService.get_post_by_id)], comment_id: int
+    post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
+    comment_id: int,
 ) -> CommentResponse:
     """
     Обрабатывает запрос на удаление конкретного комментария из поста

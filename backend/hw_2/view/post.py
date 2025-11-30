@@ -6,18 +6,26 @@ from hw_2.schemas.post import PostResponse
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@router.get("/", response_model=list[PostResponse], status_code=status.HTTP_200_OK)
+@router.get(
+    "/",
+    response_model=list[PostResponse],
+    status_code=status.HTTP_200_OK,
+)
 async def get_all_posts(
     posts: Annotated[list[PostResponse], Depends(PostService.get_all_posts)],
 ) -> list[PostResponse]:
     """
     Обрабатывает запрос на получение списка всех постов из БД
-    :return: Список всех постов из БД 
+    :return: Список всех постов из БД
     """
     return posts
 
 
-@router.get("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
+@router.get(
+    "/{id}",
+    response_model=PostResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def get_post_by_id(
     post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
 ) -> PostResponse:
@@ -29,7 +37,11 @@ async def get_post_by_id(
     return post
 
 
-@router.post("/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/",
+    response_model=PostResponse,
+    status_code=status.HTTP_201_CREATED,
+)
 async def create_post(
     post: Annotated[PostResponse, Depends(PostService.add_post)],
 ) -> PostResponse:
@@ -41,7 +53,11 @@ async def create_post(
     return post
 
 
-@router.put("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
+@router.put(
+    "/{id}",
+    response_model=PostResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def update_post_by_id(
     post: Annotated[PostResponse, Depends(PostService.update_post)],
 ) -> PostResponse:
@@ -53,7 +69,11 @@ async def update_post_by_id(
     return post
 
 
-@router.delete("/", response_model=list, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/",
+    response_model=list,
+    status_code=status.HTTP_200_OK,
+)
 async def clear_posts(
     posts: Annotated[list, Depends(PostService.clear_storage)],
 ) -> list:
@@ -64,7 +84,11 @@ async def clear_posts(
     return posts
 
 
-@router.delete("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
+@router.delete(
+    "/{id}",
+    response_model=PostResponse,
+    status_code=status.HTTP_200_OK,
+)
 async def delete_post_by_id(
     post: Annotated[PostResponse, Depends(PostService.del_post_by_id)],
 ) -> PostResponse:
