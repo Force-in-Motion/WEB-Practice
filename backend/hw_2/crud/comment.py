@@ -4,24 +4,9 @@ from hw_2.schemas.comment import CommentCreate, CommentResponse
 from hw_2 import DBExeption
 
 
-# POSTS = [
-#     {
-#         "id": int,
-#         "title": str,
-#         "description": str,
-#         "created_at": str,
-#         "comments": [
-#             {
-#                 "id": int,
-#                 "text": str,
-#                 "created_at": str
-#             },
-#             ....
-#         ]
-#     },
-#     ....
-# ]
-class Crud:
+
+
+class CommentCrud:
 
     storage: list = STORAGE
 
@@ -29,7 +14,7 @@ class Crud:
 
 
     @classmethod
-    async def get_all_comment(
+    async def get_all(
         cls,
         post: PostResponse,
     ) -> list[CommentResponse]:
@@ -40,7 +25,7 @@ class Crud:
         """
 
     @classmethod
-    async def get_comment_by_id(
+    async def get_by_id(
         cls,
         post: PostResponse,
         comment_id: int,
@@ -53,7 +38,7 @@ class Crud:
         """
 
     @classmethod
-    async def add_comment(cls, post: PostResponse) -> CommentResponse:
+    async def add(cls, post: PostResponse) -> CommentResponse:
         """
         Добавляет комментарий в полученный пост
         :param post: конкретный пост
@@ -61,7 +46,7 @@ class Crud:
         """
 
     @classmethod
-    async def update_comment(
+    async def update(
         cls,
         post: PostResponse,
         new_comment_data: CommentCreate,
@@ -76,7 +61,7 @@ class Crud:
         """
 
     @classmethod
-    async def del_comment_by_id(cls, post: PostResponse, comment_id: int,) -> CommentResponse:
+    async def delete(cls, post: PostResponse, comment_id: int,) -> CommentResponse:
         """
         Удаляет конкретный комментарий из полученного поста 
         :param post: конкретный пост
@@ -86,7 +71,7 @@ class Crud:
 
 
     @classmethod
-    async def clear_post(cls) -> list:
+    async def clear(cls) -> list:
         """
         Полностью очищает полученный пост
         :return: Пустой список

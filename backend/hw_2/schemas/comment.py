@@ -11,10 +11,11 @@ class CommentCreate(BaseModel):
 
     text: Annotated[str, MinLen(5)]
 
-    created_at: datetime = datetime.now(timezone.utc)
 
 
 class CommentResponse(CommentCreate):
     """ Схема для возврата клиенту """
 
     id: int
+
+    created_at: datetime = datetime.now(timezone.utc)

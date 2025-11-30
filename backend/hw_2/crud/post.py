@@ -1,109 +1,75 @@
-from app.utils.exeption import DBExeption
-from app.schemas.book import BookIn, BookOut
+from backend.hw_2.schemas.post import PostCreate, PostResponse, PostUpdate
+from hw_2.storage import STORAGE
+from hw_2.utils.exeption import DBExeption 
 
-# POSTS = [
-#     {
-#         "id": int,
-#         "title": str,
-#         "description": str,
-#         "created_at": str,
-#         "comments": [
-#             {
-#                 "id": int,
-#                 "text": str,
-#                 "created_at": str
-#             },
-#             ....
-#         ]
-#     },
-#     ....
-# ]
-class Crud:
 
-    storage: list[BookOut] = []
+
+
+class PostCrud:
+
+    storage: list = STORAGE
+
     count: int = 1
 
 
     @classmethod
-    async def get_all_records(cls, in_stock: bool = True) -> list[BookOut]:
+    async def get_all(cls) -> list[PostResponse]:
         """
-        Возвращает список книг, хранящихся в БД в зависимости от условия
-        :return: список книг, хранящихся в БД
+        Возвращает список постов из БД
+        :return: список постов
         """
-        if in_stock:
-            return cls.storage
-
-        return [book for book in cls.storage if book.in_stock == False]
 
 
     @classmethod
-    async def get_record_by_id(cls, id: int) -> BookOut:
-        """
-        Возвращает Конкретную книгу, найденную по id
-        :param id: Идентификатор объекта в БД
-        :return: Объект BookOut
-        """
-        book = next((book for book in cls.storage if book.id == id), None)
-
-        if not book:
-            raise DBExeption.not_found
-
-        return book
-
-
-    @classmethod
-    async def add_record(cls, book_in: BookIn) -> BookOut:
-        """
-        Создает новую запись в БД
-        :param book: Объект BookIn, полученный от пользователя
-        :return: Объект BookOut, созданный в БД
-        """
-        book_out: BookOut = BookOut(id=cls.count, **book_in.model_dump())
-
-        cls.storage.append(book_out)
-
-        cls.count += 1
-
-        return book_out
-
-
-    @classmethod
-    async def update_record(
+    async def get_by_id(
         cls,
-        book_in: BookIn,
-        book_out: BookOut,
-    ) -> BookOut:
+        post_id: int,
+    ) -> PostResponse:
         """
-        Обновляет Объект книги в БД
-        :param book_in: Объект BookIn, полученный от пользователя
-        :param book_out: Объект BookOut, предварительно найденный по id
-        :return: Объект BookOut, обновленный в БД
+        Возвращает конкретный пост, найденный по id в БД
+        :param post_id: Идентификатор поста в БД
+        :return: конкретный пост
         """
-        for key, value in book_in.model_dump(exclude_unset=True).items():
-            if value is not None:
-                setattr(book_out, key, value)
-
-        return book_out
 
 
     @classmethod
-    async def del_record_by_id(cls, book_out: BookOut) -> BookOut:
+    async def add(cls, post: PostCreate) -> PostResponse:
         """
-        Удаляет Объект книги из БД
-        :param book: Объект BookOut, предварительно найденный по id
-        :return: Объект BookOut, удаленный из БД
+        Добавляет пост в БД
+        :param post: конкретный пост
+        :return: добавленный пост
         """
-        cls.storage.remove(book_out)
-
-        return book_out
 
 
     @classmethod
-    async def clear_db(cls) -> list[BookOut]:
+    async def update(
+        cls,
+        post_update: PostUpdate,
+        post: PostResponse,
+    ) -> PostResponse:
+        """
+        Обновляет данные полученного поста
+        :param post_create: новые данные поста, полученный от клиента
+        :param post_response: конкретный пост, найденный в БД
+        :return: обновленный пост
+        """
+
+
+    @classmethod
+    async def delete(
+        cls,
+        post: PostResponse,
+    ) -> PostResponse:
+        """
+        Удаляет полученный пост из БД
+        :param post: конкретный пост
+        :return: удаленный пост
+        """
+
+
+    @classmethod
+    async def clear(cls) -> list:
         """
         Полностью очищает БД
         :return: Пустой список
         """
-        cls.storage.clear()
-        cls.count = 1
-        return cls.storage
