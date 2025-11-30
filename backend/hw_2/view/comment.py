@@ -1,108 +1,76 @@
-# GET /posts/{post_id}/comments
-
-# POST /posts/{post_id}/comments
-
-# GET /posts/{post_id}/comments/{comment_id}
-
-# DELETE /posts/{post_id}/comments/{comment_id}
-
-# PUT /posts/{post_id}/comments/{comment_id}
-
-
-
-
-
-
-
-
 from typing import Annotated
 from fastapi import APIRouter, Depends, status
-from hw_2.crud.comment import Crud
-from hw_2.schemas.comment import UserIn, UserOut
-
+from hw_2.service.db_service import PostService
+from hw_2.schemas.post import PostResponse
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
-@router.get("/", response_model=list[UserOut], status_code=status.HTTP_200_OK)
-async def get_all_users(is_active: bool = True) -> list[UserOut]:
+@router.get("/", response_model=list[PostResponse], status_code=status.HTTP_200_OK)
+async def get_all_posts(
+    posts: Annotated[list[PostResponse], Depends(PostService.get_all_posts)],
+) -> list[PostResponse]:
     """
-    Обрабатывает запрос на получение списка пользователей согласно условия
-    :param is_active: Позволяет определить условие выдачи результата ( все пользователи / те, которые не активны )
-    :return: Список пользователей согласно условию
+    Обрабатывает запрос на получение списка всех постов из БД
+    :return: Список всех постов из БД 
     """
-    return await Crud.get_all_records(is_active)
+    return posts
 
 
-@router.get("/{id}", response_model=UserOut, status_code=status.HTTP_200_OK)
-async def get_user_by_id(
-    user_out: Annotated[UserOut, Depends(Crud.get_record_by_id)],
-) -> UserOut:
+@router.get("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
+async def get_post_by_id(
+    post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
+) -> PostResponse:
     """
-    Обрабатывает запрос на получение конкретного пользователя по его id
-    :param user_out: Схема пользователя для возврата клиенту, полученная Через зависимость
-    :return: Конкретного пользователя
+    Обрабатывает запрос на получение конкретного поста по его id
+    :param post: конкретный пост, полученный через зависимость
+    :return: онкретный пост
     """
-    return user_out
+    return post
 
 
-@router.get("/by-name/{name}", response_model=UserOut, status_code=status.HTTP_200_OK)
-async def get_user_by_name(
-    user_out: Annotated[UserOut, Depends(Crud.get_record_by_name)],
-) -> UserOut:
+@router.post("/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
+async def create_post(
+    post: Annotated[PostResponse, Depends(PostService.add_post)],
+) -> PostResponse:
     """
-    Обрабатывает запрос на получение конкретного пользователя по его name
-    :param user_out: Схема пользователя для возврата клиенту, полученная Через зависимость
-    :return: Конкретного пользователя
+    Обрабатывает запрос на добавление поста в БД
+    :param post: добаленный пост, созданный через зависимость
+    :return: добавленный в БД пост
     """
-    return user_out
+    return post
 
 
-@router.post("/", response_model=UserOut, status_code=status.HTTP_201_CREATED)
-async def create_user(user_in: UserIn) -> UserOut:
+@router.put("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
+async def update_post_by_id(
+    post: Annotated[PostResponse, Depends(PostService.update_post)],
+) -> PostResponse:
     """
-    Обрабатывает запрос на добавление пользователя в БД
-    :param user_out: Схема пользователя для возврата клиенту, полученная Через зависимость после добавления в БД
-    :return: добавленного в БД пользователя
+    Обрабатывает запрос на обновление конкретного поста в БД
+    :param post: конкретный пост, обновленный через зависимость
+    :return: Обновленный в БД пост
     """
-    return await Crud.add_record(user_in=user_in)
-
-
-@router.put("/{id}", response_model=UserOut, status_code=status.HTTP_200_OK)
-async def update_user_by_id(
-    user_in: UserIn,
-    user_out: Annotated[UserOut, Depends(Crud.get_record_by_id)],
-) -> UserOut:
-    """
-    Обрабатывает запрос на обновление конкретного пользователя в БД
-    :param user_in: Схема пользователя, полученная от клиента
-    :param user_out: Схема пользователя для возврата клиенту, полученная Через зависимость после обновления в БД
-    :return: Обновленного в БД пользователя
-    """
-    return await Crud.update_record(
-        user_in=user_in,
-        user_out=user_out,
-    )
+    return post
 
 
 @router.delete("/", response_model=list, status_code=status.HTTP_200_OK)
-async def clear_users(
-    list_user_out: Annotated[list, Depends(Crud.clear_db)],
+async def clear_posts(
+    posts: Annotated[list, Depends(PostService.clear_storage)],
 ) -> list:
     """
     Полностью очищает БД
     :return: Список
     """
-    return list_user_out
+    return posts
 
 
-@router.delete("/{id}", response_model=UserOut, status_code=status.HTTP_200_OK)
-async def delete_user_by_id(
-    user_out: Annotated[UserOut, Depends(Crud.get_record_by_id)],
-) -> UserOut:
+@router.delete("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
+async def delete_book_by_id(
+    post: Annotated[PostResponse, Depends(PostService.del_post_by_id)],
+) -> PostResponse:
     """
-    Обрабатывает запрос на удаление конкретного пользователя из БД
-    :param user_out: Схема пользователя для возврата клиенту, полученная Через зависимость после удаления из БД
-    :return: Удаленную из БД книгу
+    Обрабатывает запрос на удаление конкретного поста из БД
+    :param post: онкретный пост, удаленный через зависимость
+    :return: Удаленный из БД пост
     """
-    return await Crud.del_record_by_id(user_out=user_out)
+    return post
