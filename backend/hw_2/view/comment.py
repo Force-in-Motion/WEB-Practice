@@ -1,87 +1,108 @@
-# GET /posts/{post_id}/comments
-
-# POST /posts/{post_id}/comments
-
-# GET /posts/{post_id}/comments/{comment_id}
-
-# DELETE /posts/{post_id}/comments/{comment_id}
-
-# PUT /posts/{post_id}/comments/{comment_id}
-
-
 from typing import Annotated
 from fastapi import APIRouter, Depends, status
-from backend.hw_2.service.post_service import PostService
+from hw_2.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
+from hw_2.service.comm_sevice import CommentService
+from hw_2.service.post_service import PostService
 from hw_2.schemas.post import PostResponse
 
-router = APIRouter(prefix="/posts", tags=["Posts"])
+router = APIRouter(
+    prefix="/posts/{post_id}/comments",
+    tags=["Comments"],
+)
 
 
-@router.get("/", response_model=list[PostResponse], status_code=status.HTTP_200_OK)
-async def get_all_posts(
-    posts: Annotated[list[PostResponse], Depends(PostService.get_all_posts)],
-) -> list[PostResponse]:
-    """
-    Обрабатывает запрос на получение списка всех постов из БД
-    :return: Список всех постов из БД 
-    """
-    return posts
-
-
-@router.get("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
-async def get_post_by_id(
+@router.get("/", response_model=list[CommentResponse], status_code=status.HTTP_200_OK)
+async def get_all_comments_from_post(
     post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
-) -> PostResponse:
+) -> list[CommentResponse]:
     """
-    Обрабатывает запрос на получение конкретного поста по его id
+    Обрабатывает запрос на получение списка всех комментариев конкретного поста
     :param post: конкретный пост, полученный через зависимость
-    :return: онкретный пост
+    :return: Список всех комментариев поста
     """
-    return post
+    return await CommentService.get_all_comment(post=post)
 
 
-@router.post("/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
-async def create_post(
-    post: Annotated[PostResponse, Depends(PostService.add_post)],
+@router.get(
+    "/{comment_id}", response_model=CommentResponse, status_code=status.HTTP_200_OK
+)
+async def get_comment_by_id_from_post(
+    post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
+    comment_id: int,
 ) -> PostResponse:
     """
-    Обрабатывает запрос на добавление поста в БД
-    :param post: добаленный пост, созданный через зависимость
-    :return: добавленный в БД пост
+    Обрабатывает запрос на получение конкретного комментария поста
+    :param post: конкретный пост, полученный через зависимость
+    :param comment_id: идентификатор конкретного комментария
+    :return: конкретный комментарий
     """
-    return post
+    return await CommentService.del_comment_by_id(
+        comment_id=comment_id,
+        post=post,
+    )
 
 
-@router.put("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
-async def update_post_by_id(
-    post: Annotated[PostResponse, Depends(PostService.update_post)],
-) -> PostResponse:
+@router.post("/", response_model=CommentResponse, status_code=status.HTTP_201_CREATED)
+async def create_comment_from_post(
+    post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
+    comment: CommentCreate,
+) -> CommentResponse:
     """
-    Обрабатывает запрос на обновление конкретного поста в БД
-    :param post: конкретный пост, обновленный через зависимость
-    :return: Обновленный в БД пост
+    Обрабатывает запрос на добавление нового комментария в пост
+    param post: конкретный пост, полученный через зависимость
+    param comment: комментарий, полученный от клиента
+    :return: добавленный в пост комментарий
     """
-    return post
+    return await CommentService.add_comment(
+        post=post,
+        comment=comment,
+    )
+
+
+@router.put(
+    "/{comment_id}", response_model=CommentResponse, status_code=status.HTTP_200_OK
+)
+async def update_comment_by_id_from_post(
+    post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
+    comment_id: int,
+    comment_update: CommentUpdate,
+) -> CommentResponse:
+    """
+    Обрабатывает запрос на обновление конкретного комментария в посте
+    param post: конкретный пост, полученный через зависимость
+    :return: Обновленный в посте комментарий
+    """
+    return await CommentService.update_comment(
+        post=post,
+        comment_id=comment_id,
+        comment_update=comment_update,
+    )
 
 
 @router.delete("/", response_model=list, status_code=status.HTTP_200_OK)
-async def clear_posts(
-    posts: Annotated[list, Depends(PostService.clear_storage)],
+async def clear_comments_from_post(
+    post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
 ) -> list:
     """
-    Полностью очищает БД
-    :return: Список
+    Полностью очищает комментарии в посте
+    param post: конкретный пост, полученный через зависимость
+    :return: Пустой писок
     """
-    return posts
+    return await CommentService.clear_comments(post)
 
 
-@router.delete("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
-async def delete_book_by_id(
-    post: Annotated[PostResponse, Depends(PostService.del_post_by_id)],
-) -> PostResponse:
+@router.delete(
+    "/{comment_id}", response_model=CommentResponse, status_code=status.HTTP_200_OK
+)
+async def delete_comment_by_id_from_post(
+    post: Annotated[PostResponse, Depends(PostService.get_post_by_id)], comment_id: int
+) -> CommentResponse:
     """
-    Обрабатывает запрос на удаление конкретного поста из БД
-    :param post: онкретный пост, удаленный через зависимость
-    :return: Удаленный из БД пост
+    Обрабатывает запрос на удаление конкретного комментария из поста
+    param post: конкретный пост, полученный через зависимость
+    :return: Удаленный из поста комментарий
     """
-    return post
+    return await CommentService.del_comment_by_id(
+        post=post,
+        comment_id=comment_id,
+    )

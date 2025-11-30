@@ -1,19 +1,22 @@
-from backend.hw_2.schemas.post import PostResponse
+from hw_2.schemas.post import PostResponse
 from hw_2.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
 from hw_2.crud.comment import CommentCrud
 
 
 class CommentService:
 
-
     @classmethod
-    async def get_all_comment(cls) -> list[CommentResponse]:
+    async def get_all_comment(
+        cls,
+        post: PostResponse,
+    ) -> list[CommentResponse]:
         """
         Возвращает список комментариев поста
         :return: список комментариев
         """
-        return await CommentCrud.get_all()
+        CommentCrud.post = post
 
+        return await CommentCrud.get_all()
 
     @classmethod
     async def get_comment_by_id(
@@ -23,17 +26,17 @@ class CommentService:
     ) -> CommentResponse:
         """
         Возвращает конкретный комментарий, найденный по id в полученном посте
-        :param post_id: Идентификатор комментария в посте
+        :param comment_id: Идентификатор комментария в посте
         :return: конкретный комментарий
         """
         CommentCrud.post = post
 
         return await CommentCrud.get_by_id(comment_id=comment_id)
 
-
     @classmethod
     async def add_comment(
-        cls, post: PostResponse, comment: CommentCreate
+        cls, post: PostResponse,
+        comment: CommentCreate,
     ) -> CommentResponse:
         """
         Добавляет комментария в полученный пост
@@ -43,7 +46,6 @@ class CommentService:
         CommentCrud.post = post
 
         return await CommentCrud.add(comment=comment)
-
 
     @classmethod
     async def update_comment(
@@ -68,7 +70,6 @@ class CommentService:
             comment=comment,
         )
 
-
     @classmethod
     async def del_comment_by_id(
         cls,
@@ -87,9 +88,8 @@ class CommentService:
 
         return await CommentCrud.delete(comment=comment)
 
-
     @classmethod
-    async def clear_comments_from_post(
+    async def clear_comments(
         cls,
         post: PostResponse,
     ) -> list:

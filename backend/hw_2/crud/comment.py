@@ -47,7 +47,7 @@ class CommentCrud:
         :param comment: конкретный комментарий
         :return: добавленный комментарий
         """
-        comment = CommentCreate(
+        comment = CommentResponse(
             id=cls.count,
             **comment.model_dump()
         )

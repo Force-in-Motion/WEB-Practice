@@ -3,12 +3,14 @@ from fastapi import FastAPI
 from hw_1.view.book import router as book_router
 from hw_1.view.user import router as user_router
 from hw_2.view.post import router as post_router
+from hw_2.view.comment import router as comment_router
 
 app = FastAPI()
 
 app.include_router(book_router)
 app.include_router(user_router)
 app.include_router(post_router)
+app.include_router(comment_router)
 
 
 

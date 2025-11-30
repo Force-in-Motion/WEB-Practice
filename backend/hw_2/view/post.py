@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, status
-from backend.hw_2.service.post_service import PostService
+from hw_2.service.post_service import PostService
 from hw_2.schemas.post import PostResponse
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
@@ -65,7 +65,7 @@ async def clear_posts(
 
 
 @router.delete("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
-async def delete_book_by_id(
+async def delete_post_by_id(
     post: Annotated[PostResponse, Depends(PostService.del_post_by_id)],
 ) -> PostResponse:
     """
