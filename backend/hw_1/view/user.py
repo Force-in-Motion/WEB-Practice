@@ -1,7 +1,7 @@
 from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, status
-from app.crud.user import Crud
-from app.schemas.user import UserIn, UserOut
+from hw_1.crud.user import Crud
+from hw_1.schemas.user import UserIn, UserOut
 
 
 router = APIRouter(prefix="/user", tags=["Users"])

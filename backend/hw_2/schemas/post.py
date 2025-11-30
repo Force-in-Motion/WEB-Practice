@@ -2,7 +2,7 @@ from typing import Annotated, List, Optional
 from annotated_types import MinLen, MaxLen
 from pydantic import BaseModel
 from datetime import datetime, timezone
-from schemas.comment import CommentResponse
+from hw_2.schemas.comment import CommentResponse
 
 
 

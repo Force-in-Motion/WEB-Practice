@@ -1,5 +1,5 @@
-from app.schemas.user import UserOut, UserIn
-from app.utils.exeption import DBExeption
+from hw_1.schemas.user import UserOut, UserIn
+from hw_1.utils.exeption import DBExeption
 
 
 class Crud:

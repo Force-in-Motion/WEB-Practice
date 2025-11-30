@@ -1,79 +1,76 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, status
-from hw_2.crud.post import PostCrud
-from hw_2.schemas.post import PostCreate, PostResponse
+from hw_2.service.service import PostService
+from hw_2.schemas.post import PostResponse
 
 router = APIRouter(prefix="/posts", tags=["Posts"])
 
 
 @router.get("/", response_model=list[PostResponse], status_code=status.HTTP_200_OK)
-async def get_all_posts() -> list[PostResponse]:
+async def get_all_posts(
+    posts: Annotated[list[PostResponse], Depends(PostService.get_all_posts)],
+) -> list[PostResponse]:
     """
     Обрабатывает запрос на получение списка всех постов из БД
-    :return: Список всех постов
+    :return: Список всех постов из БД 
     """
-    return await Crud.get_all_records(in_stock)
+    return posts
 
 
-@router.get("/{id}", response_model=BookOut, status_code=status.HTTP_200_OK)
-async def get_book_by_id(
-    book_out: Annotated[BookOut, Depends(Crud.get_record_by_id)],
-) -> BookOut:
+@router.get("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
+async def get_post_by_id(
+    post: Annotated[PostResponse, Depends(PostService.get_post_by_id)],
+) -> PostResponse:
     """
-    Обрабатывает запрос на получение конкретной книги по ее id
-    :param book_out: Схема книги для возврата клиенту, полученная Через зависимость
-    :return: Конкретную книгу
+    Обрабатывает запрос на получение конкретного поста по его id
+    :param post: конкретный пост, полученный через зависимость
+    :return: онкретный пост
     """
-    return book_out
+    return post
 
 
-@router.post("/", response_model=BookOut, status_code=status.HTTP_201_CREATED)
-async def create_book(
-    book_out: Annotated[BookOut, Depends(Crud.add_record)],
-) -> BookOut:
+@router.post("/", response_model=PostResponse, status_code=status.HTTP_201_CREATED)
+async def create_post(
+    post: Annotated[PostResponse, Depends(PostService.add_post)],
+) -> PostResponse:
     """
-    Обрабатывает запрос на добавление книги в БД
-    :param book_out: Схема книги для возврата клиенту, полученная Через зависимость после добавления в БД
-    :return: добавленную в БД книгу
+    Обрабатывает запрос на добавление поста в БД
+    :param post: добаленный пост, созданный через зависимость
+    :return: добавленный в БД пост
     """
-    return book_out
+    return post
 
 
-@router.put("/{id}", response_model=BookOut, status_code=status.HTTP_200_OK)
-async def update_book_by_id(
-    book_in: BookIn,
-    book_out: Annotated[BookOut, Depends(Crud.get_record_by_id)],
-) -> BookOut:
+@router.put("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
+async def update_post_by_id(
+    post: Annotated[PostResponse, Depends(PostService.update_post)],
+) -> PostResponse:
     """
-    Обрабатывает запрос на обновление конкретной книги в БД
-    :param book_in: Схема книги, полученная от клиента
-    :param book_out: Схема книги для возврата клиенту, полученная Через зависимость после обновления в БД
-    :return: Обновленную в БД книгу
+    Обрабатывает запрос на обновление конкретного поста в БД
+    :param post: конкретный пост, обновленный через зависимость
+    :return: Обновленный в БД пост
     """
-    return await Crud.update_record(
-        book_in=book_in,
-        book_out=book_out,
-    )
+    return post
 
 
 @router.delete("/", response_model=list, status_code=status.HTTP_200_OK)
-async def clear_books(
-    list_books_out: Annotated[list, Depends(Crud.clear_db)],
+async def clear_posts(
+    posts: Annotated[list, Depends(PostService.clear_storage)],
 ) -> list:
     """
     Полностью очищает БД
     :return: Список
     """
-    return list_books_out
+    return posts
 
 
-@router.delete("/{id}", response_model=BookOut, status_code=status.HTTP_200_OK)
+@router.delete("/{id}", response_model=PostResponse, status_code=status.HTTP_200_OK)
 async def delete_book_by_id(
-    book_out: Annotated[BookOut, Depends(Crud.get_record_by_id)],
-) -> BookOut:
+    post: Annotated[PostResponse, Depends(PostService.del_post_by_id)],
+) -> PostResponse:
     """
-    Обрабатывает запрос на удаление конкретной книги из БД
-    :param book_out: Схема книги для возврата клиенту, полученная Через зависимость после удаления из БД
-    :return: Удаленную из БД книгу
+    Обрабатывает запрос на удаление конкретного поста из БД
+    :param post: онкретный пост, удаленный через зависимость
+    :return: Удаленный из БД пост
     """
-    return await Crud.del_record_by_id(book_out=book_out)
+    return post

@@ -1,5 +1,5 @@
-from app.utils.exeption import DBExeption
-from app.schemas.book import BookIn, BookOut
+from hw_1.utils.exeption import DBExeption
+from hw_1.schemas.book import BookIn, BookOut
 
 
 class Crud:

@@ -1,7 +1,7 @@
 from typing import Annotated, Optional
 from fastapi import APIRouter, Depends, status
-from app.crud.book import Crud
-from app.schemas.book import BookIn, BookOut
+from hw_1.crud.book import Crud
+from hw_1.schemas.book import BookIn, BookOut
 
 router = APIRouter(prefix="/books", tags=["Books"])
 

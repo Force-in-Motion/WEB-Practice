@@ -1,11 +1,10 @@
-from backend.hw_2.schemas.post import PostCreate, PostResponse, PostUpdate
+from hw_2.schemas.post import PostCreate, PostResponse, PostUpdate
 from hw_2.storage import STORAGE
 from hw_2.crud.post import PostCrud
 from hw_2.utils.exeption import DBExeption
 
 
-class DBService:
-
+class PostService:
 
     @classmethod
     async def get_all_posts(cls) -> list[PostResponse]:
@@ -14,7 +13,6 @@ class DBService:
         :return: список постов
         """
         return await PostCrud.get_all()
-
 
     @classmethod
     async def get_post_by_id(
@@ -28,7 +26,6 @@ class DBService:
         """
         return await PostCrud.get_by_id(post_id=post_id)
 
-
     @classmethod
     async def add_post(
         cls,
@@ -40,7 +37,6 @@ class DBService:
         :return: добавленный пост
         """
         return await PostCrud.add(post=post)
-
 
     @classmethod
     async def update_post(
@@ -61,7 +57,6 @@ class DBService:
             post=post,
         )
 
-
     @classmethod
     async def del_post_by_id(
         cls,
@@ -76,7 +71,6 @@ class DBService:
 
         return await PostCrud.delete(post=post)
 
-
     @classmethod
     async def clear_storage(cls) -> list:
         """
@@ -84,3 +78,5 @@ class DBService:
         :return: Пустой список
         """
         return await PostCrud.clear()
+
+
