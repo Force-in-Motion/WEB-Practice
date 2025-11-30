@@ -1,78 +1,99 @@
-from backend.hw_2.schemas.post import PostResponse
-from hw_2.storage import STORAGE
-from hw_2.schemas.comment import CommentCreate, CommentResponse
-from hw_2 import DBExeption
+from hw_2.schemas.comment import CommentCreate, CommentResponse, CommentUpdate
+from hw_2.schemas.post import PostResponse
+from hw_2.utils.exeption import DBExeption
 
 
 
 
 class CommentCrud:
 
-    storage: list = STORAGE
+    post: PostResponse = None
 
     count: int = 1
 
 
     @classmethod
-    async def get_all(
-        cls,
-        post: PostResponse,
-    ) -> list[CommentResponse]:
+    async def get_all(cls) -> list[CommentResponse]:
         """
         Возвращает список коммментариев полученного поста
         :param post: конкретный пост
         :return: список коммментариев
         """
+        return cls.post.comments
+
 
     @classmethod
     async def get_by_id(
         cls,
-        post: PostResponse,
         comment_id: int,
     ) -> CommentResponse:
         """
         Возвращает конкретный комментарий, найденный по id в конкретном посте
-        :param post: полученный пост
         :param comment_id: Идентификатор комментария в посте
         :return: конкретный комментарий
         """
+        comment = next((com for com in cls.post.comments if com.id == comment_id), None)
+
+        if not comment:
+            raise DBExeption.not_found
+        
+        return comment
+    
 
     @classmethod
-    async def add(cls, post: PostResponse) -> CommentResponse:
+    async def add(cls, comment: CommentCreate) -> CommentResponse:
         """
         Добавляет комментарий в полученный пост
-        :param post: конкретный пост
+        :param comment: конкретный комментарий
         :return: добавленный комментарий
         """
+        comment = CommentCreate(
+            id=cls.count,
+            **comment.model_dump()
+        )
+
+        cls.post.comments.append(comment)
+
+        cls.count += 1
+
+        return comment
+    
 
     @classmethod
     async def update(
         cls,
-        post: PostResponse,
-        new_comment_data: CommentCreate,
-        comment_response: CommentResponse,
+        comment_update: CommentUpdate,
+        comment: CommentResponse,
     ) -> CommentResponse:
         """
         Обновляет данные полученного комментария
-        :param post: конкретный пост
-        :param new_comment_data: новые данные комментария
-        :param comment_response: конкретный комментарий, полученный для замены его данных
+        :param comment: конкретный комментарий
+        :param comment_update: новые данные комментария
         :return: обновленный комментарий
         """
+        for key, value in comment_update.model_dump(exclude_unset=True).items():
+            if value is not None:
+                setattr(comment, key, value)
+
+        return comment
+
 
     @classmethod
-    async def delete(cls, post: PostResponse, comment_id: int,) -> CommentResponse:
+    async def delete(cls, comment: CommentResponse,) -> CommentResponse:
         """
         Удаляет конкретный комментарий из полученного поста 
-        :param post: конкретный пост
-        :param comment_id: конкретный комментарий
+        :param comment: конкретный комментарий
         :return: удаленный комментарий
         """
+        cls.post.comments.remove(comment)
+
+        return comment
 
 
     @classmethod
     async def clear(cls) -> list:
         """
-        Полностью очищает полученный пост
+        Полностью очищает полученный пост от комментариев
         :return: Пустой список
         """
+        return [] if cls.post.comments.clear() else cls.post.comments

@@ -1,6 +1,6 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends, status
-from backend.hw_2.service.db_service import PostService
+from backend.hw_2.service.post_service import PostService
 from hw_2.schemas.post import PostResponse
 
 router = APIRouter(prefix="/posts", tags=["Posts"])

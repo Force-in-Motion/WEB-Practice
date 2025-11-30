@@ -1,28 +1,21 @@
 from hw_2.schemas.post import PostCreate, PostResponse, PostUpdate
-from hw_2.storage import STORAGE
-from hw_2.utils.exeption import DBExeption 
+from hw_2.crud.post import PostCrud
 
 
 
 
-class PostCrud:
-
-    storage: list = STORAGE
-
-    count: int = 1
-
+class PostService:
 
     @classmethod
-    async def get_all(cls) -> list[PostResponse]:
+    async def get_all_posts(cls) -> list[PostResponse]:
         """
         Возвращает список постов из БД
         :return: список постов
         """
-        return  cls.storage
-
+        return await PostCrud.get_all()
 
     @classmethod
-    async def get_by_id(
+    async def get_post_by_id(
         cls,
         post_id: int,
     ) -> PostResponse:
@@ -31,38 +24,25 @@ class PostCrud:
         :param post_id: Идентификатор поста в БД
         :return: конкретный пост
         """
-        post = next((post for post in cls.storage if post.id == post_id), None)
-
-        if not post:
-            raise DBExeption.not_found
-
-        return post
-
+        return await PostCrud.get_by_id(post_id=post_id)
 
     @classmethod
-    async def add(cls, post: PostCreate) -> PostResponse:
+    async def add_post(
+        cls,
+        post: PostCreate,
+    ) -> PostResponse:
         """
         Добавляет пост в БД
         :param post: конкретный пост
         :return: добавленный пост
         """
-        post_response = PostResponse(
-            id=cls.count,
-            **post.model_dump()
-        )
-
-        cls.storage.append(post_response)
-
-        cls.count += 1
-
-        return post_response
-
+        return await PostCrud.add(post=post)
 
     @classmethod
-    async def update(
+    async def update_post(
         cls,
+        post_id: int,
         post_update: PostUpdate,
-        post: PostResponse,
     ) -> PostResponse:
         """
         Обновляет данные полученного поста
@@ -70,33 +50,35 @@ class PostCrud:
         :param post_response: конкретный пост, найденный в БД
         :return: обновленный пост
         """
-        for key, value in post_update.model_dump(exclude_unset=True).items():
-            if value is not  None:
-                setattr(post, key, value)
+        post = await PostCrud.get_by_id(post_id=post_id)
 
-        return post
-    
+        return await PostCrud.update(
+            post_update=post_update,
+            post=post,
+        )
 
     @classmethod
-    async def delete(
+    async def del_post_by_id(
         cls,
-        post: PostResponse,
+        post_id: int,
     ) -> PostResponse:
         """
         Удаляет полученный пост из БД
         :param post: конкретный пост
         :return: удаленный пост
         """
-        cls.storage.remove(post)
+        post = await PostCrud.get_by_id(post_id=post_id)
 
-        return post
-
+        return await PostCrud.delete(post=post)
 
     @classmethod
-    async def clear(cls) -> list:
+    async def clear_storage(cls) -> list:
         """
         Полностью очищает БД
         :return: Пустой список
         """
-        return [] if cls.storage.clear() else cls.storage
+        return await PostCrud.clear()
+
+
+
 
